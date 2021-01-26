@@ -1,0 +1,54 @@
+package plausibcheck.adress
+
+import com.neo.drools.model.Address;
+import com.neo.drools.model.fact.AddressCheckResult;
+
+rule "Postcode should be filled with exactly 5 numbers"
+    when
+        address : Address(postcode != null, postcode matches "([0-9]{5})")
+        checkResult : AddressCheckResult();
+    then
+        checkResult.setPostCodeResult(true);
+		System.out.println("规则中打印日志：校验通过!");
+end
+
+rule "Postcode"
+    when
+        address : Address(postcode > 50000 && postcode <70000)
+        checkResult : AddressCheckResult();
+    then
+        checkResult.setPostCodeResult(true);
+		System.out.println("规则中打印日志：校验通过,postcode大于50000!");
+end
+
+rule "greater than 3"
+    when
+        address : Address(postcode >= 3000)
+        checkResult : AddressCheckResult();
+    then
+        checkResult.setPostCodeResult(true);
+        address.setContext("3:6:1");
+		System.out.println("大于三百万");
+end
+
+rule "less than 3 and discount"
+    when
+        address : Address(postcode < 3000 && (controlCable >= 50 || uncontrolCable >=200 || unAndControlCable >=50))
+        checkResult : AddressCheckResult();
+    then
+        checkResult.setPostCodeResult(true);
+        address.setContext("9:1");
+		System.out.println("满足优惠条件");
+end
+
+rule "less than 3 and undiscount"
+    when
+        address : Address(postcode < 3000 && !(controlCable >= 50 || uncontrolCable >=200 || unAndControlCable >=50))
+        checkResult : AddressCheckResult();
+    then
+        checkResult.setPostCodeResult(true);
+        address.setContext("10:0");
+		System.out.println("小于300万且不满足优惠条件");
+end
+
+
